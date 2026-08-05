@@ -81,3 +81,6 @@ Control de Versiones: Git & GitHub.
 Alexandre Motta
 
 Data Scientist Jr. / Data Analyst
+
+> 🔒 **Aviso de Confidencialidad y Datos:**  
+> Por motivos de confidencialidad y acuerdos de no divulgación (NDA), la data utilizada en este proyecto ha sido **simulada y anonimizada**. Los datos no representan cifras reales ni identidades de proveedores específicos, pero conservan la estructura transaccional, la complejidad del modelo relacional y la lógica de negocio del entorno de producción.
