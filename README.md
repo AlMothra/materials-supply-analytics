@@ -69,9 +69,15 @@ Variacion_Presupuestal = [Monto_Ejecutado] - [Presupuesto_Anual]
 
 ```
 🛠️ Tecnologías Utilizadas
+
 Base de Datos: SQL Server / T-SQL.
+
 BI & Visualización: Power BI Desktop (Power Query, DAX, DataViz).Automatización: Power Automate.
+
 Control de Versiones: Git & GitHub.
+
 👨‍💻 Autor
+
 Alexandre Motta
+
 Data Scientist Jr. / Data Analyst
