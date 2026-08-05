@@ -68,4 +68,10 @@ CALCULATE(
 Variacion_Presupuestal = [Monto_Ejecutado] - [Presupuesto_Anual]
 
 ```
-🛠️ Tecnologías UtilizadasBase de Datos: SQL Server / T-SQL.BI & Visualización: Power BI Desktop (Power Query, DAX, DataViz).Automatización: Power Automate.Control de Versiones: Git & GitHub.👨‍💻 AutorAlexandre MottaData Scientist Jr. / Data Analyst
+🛠️ Tecnologías Utilizadas
+Base de Datos: SQL Server / T-SQL.
+BI & Visualización: Power BI Desktop (Power Query, DAX, DataViz).Automatización: Power Automate.
+Control de Versiones: Git & GitHub.
+👨‍💻 Autor
+Alexandre Motta
+Data Scientist Jr. / Data Analyst
