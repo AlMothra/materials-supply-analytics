@@ -1,51 +1,62 @@
-# 📊 Torre de Control Presupuestal y Gestión de Materiales | Power BI & Power Automate
+# 📊 Torre de Control Presupuestal y Gestión de Materiales
 
 ![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
-![SQL](https://img.shields.io/badge/SQL-CC292B?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL_Server-CC292B?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![Power Automate](https://img.shields.io/badge/Power_Automate-0078D4?style=for-the-badge&logo=powerautomate&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
-## 🎯 Resumen del Proyecto
-Este proyecto aborda la **refactorización integral de un sistema de reporte transaccional disperso**, transformándolo en una **Torre de Control Ejecutiva** en Power BI. 
+## 📌 Resumen del Proyecto
+Este repositorio contiene la **solución end-to-end** para la automatización, modelado y visualización del control presupuestal de materiales y contratistas. 
 
-La solución permite auditar la ejecución presupuestal de contratistas, monitorear la tendencia mensual del gasto y prevenir quiebres de stock en tiempo real mediante un pipeline de ingesta automatizado con Power Automate.
-
----
-
-## 📉 Problema de Negocio vs. 📈 Solución Implementada
-
-| Reporte Original (Legacy) | Dashboard Refactorizado (Torre de Control) |
-| :--- | :--- |
-| Alta carga cognitiva y gráficos saturados sin jerarquía visual. | Layout ejecutivo con navegación en "Z" enfocado en toma de decisiones en <5 seg. |
-| Descalce temporal entre ejecución real y presupuesto estático. | Arquitectura DAX para aislamiento de contextos de filtro temporales. |
-| Recopilación de datos manual mediante archivos Excel por correo. | Pipeline *event-driven* de ingesta, sanitización y carga en Power Automate. |
+El proyecto resuelve la ingesta de datos desestructurados desde la fuente mediante **Power Automate**, el diseño de la base de datos relacional en **SQL**, y la construcción de un tablero ejecutivo en **Power BI** estructurado bajo un modelo en estrella (*Star Schema*).
 
 ---
 
-## 🏗️ Arquitectura de Datos y Modelado
+## 📁 Estructura del Repositorio
 
-### 1. Modelo en Estrella (*Star Schema*)
-El modelo fue optimizado para maximizar el rendimiento en el motor **VertiPaq**:
+```text
+.
+├── data/                             # Datasets en CSV (Dimensiones y Hechos)
+│   ├── Dim_Material.csv
+│   ├── Dim_Proveedor.csv
+│   ├── Dim_Proyecto.csv
+│   ├── Fact_Despachos.csv
+│   ├── Fact_Prevision.csv
+│   ├── Fact_StockAlmacen.csv
+│   └── Fact_StockReal_Consolidado.csv
+├── database/                         # Scripts de diseño de base de datos SQL
+│   ├── Business_Schema.sql           # DDL: Creación de esquemas y tablas
+│   └── views-queries.sql             # Vistas y consultas optimizadas
+├── pbix/                             # Archivo ejecutable de Power BI
+│   └── Control_Materiales_Comercial.pbix
+├── power_automate/                   # Diagramas de flujos de automatización
+│   ├── 01_solicitar_stock_flow.png   # Orquestación de solicitud programada
+│   └── 02_procesamiento_ingesta_flow.png # Pipeline de ingesta y ETL Event-Driven
+└── README.md                         # Documentación principal
+```
 
-* **Tablas de Hechos (`Fact`):**
-  * `Fact_StockReal`: Registro transaccional de ejecuciones y saldos.
-  * `Fact_Prevision`: Techos presupuestales asignados (PDI).
-* **Tablas de Dimensión (`Dim`):**
-  * `Dim_Calendario`, `Dim_Proveedor`, `Dim_Material`.
-* **Relaciones:** Unidireccionales $1:*$ para evitar dependencias circulares y optimizar la propagación de filtros.
+🏗️ Arquitectura del Sistema
 
-### 2. Lógica DAX Destacada (Manejo de Contextos)
-Para resolver el descalce entre la meta estática anual/mensual y el flujo dinámico ejecutado:
+1. Ingesta y ETL (Power Automate)Para eliminar la carga manual de archivos Excel, se implementaron dos flujos automatizados:
 
-```dax
--- Presupuesto Anual Estático (Mantiene la línea base global)
+01_solicitar_stock_flow: Disparo programado semanal que distribuye plantillas por Outlook a proveedores y contratistas desde SharePoint.
+
+02_procesamiento_ingesta_flow: Disparo Event-Driven al recibir archivos. Ejecuta la sanitización de datos, extracción por filas, inserción masiva en las tablas consolidadas y depuración del archivo origen.
+
+2. Capa de Base de Datos (SQL)Business_Schema.sql: Define las tablas de hechos y dimensiones con integridad referencial.views-queries.sql: Vistas precalculadas para aplicar Query Folding y reducir tiempos de procesamiento en la carga hacia Power BI.
+
+3. Modelado Dimensional y DAX (Power BI)El archivo Control_Materiales_Comercial.pbix implementa un modelo en estrella (Star Schema) con relaciones $1:*$ unidireccionales.
+
+Medidas DAX Principales:
+
+```text
+-- Presupuesto Anual Estático (Techo global de S/ 17.02 mill.)
 Presupuesto_Anual = 
 CALCULATE(
     SUM(Fact_Prevision[MontoPresupuestadoPDI]),
     REMOVEFILTERS(Dim_Calendario)
 ) * 12
 
--- Presupuesto Mensual Base (Garantiza benchmark estático por mes)
+-- Presupuesto Mensual Base (Benchmark fijo por mes de S/ 1.42 mill.)
 Presupuesto_Mensual = 
 CALCULATE(
     SUM(Fact_Prevision[MontoPresupuestadoPDI]),
@@ -53,5 +64,8 @@ CALCULATE(
     REMOVEFILTERS(Dim_Calendario[MesNum])
 )
 
--- Variación Presupuestal
+-- Variación Presupuestal Real
 Variacion_Presupuestal = [Monto_Ejecutado] - [Presupuesto_Anual]
+
+```
+🛠️ Tecnologías UtilizadasBase de Datos: SQL Server / T-SQL.BI & Visualización: Power BI Desktop (Power Query, DAX, DataViz).Automatización: Power Automate.Control de Versiones: Git & GitHub.👨‍💻 AutorAlexandre MottaData Scientist Jr. / Data Analyst
